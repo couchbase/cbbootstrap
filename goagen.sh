@@ -1,0 +1,1 @@
+goagen bootstrap -d github.com/couchbaselabs/cbbootstrap/design -o ./goa

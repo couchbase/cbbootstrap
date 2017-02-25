@@ -1,0 +1,52 @@
+consumes:
+- application/json
+definitions:
+  CreateOrJoinClusterPayload:
+    example:
+      cluster_id: 3gj
+      node_ip_addr_or_hostname: "5"
+    properties:
+      cluster_id:
+        example: 3gj
+        minLength: 1
+        type: string
+      node_ip_addr_or_hostname:
+        example: "5"
+        minLength: 1
+        type: string
+    required:
+    - cluster_id
+    - node_ip_addr_or_hostname
+    title: CreateOrJoinClusterPayload
+    type: object
+host: localhost:8080
+info:
+  description: REST API to enable bootstrapping Couchbase Server clusters
+  title: REST API to enable bootstrapping Couchbase Server clusters
+  version: ""
+paths:
+  /cluster:
+    post:
+      description: Create a new Couchbase Cluster
+      operationId: cluster#create_or_join
+      parameters:
+      - in: body
+        name: payload
+        required: true
+        schema:
+          $ref: '#/definitions/CreateOrJoinClusterPayload'
+      responses:
+        "200":
+          description: OK
+      schemes:
+      - http
+      - https
+      summary: create_or_join cluster
+      tags:
+      - cluster
+produces:
+- application/json
+schemes:
+- http
+- https
+swagger: "2.0"
