@@ -1,0 +1,5 @@
+/.idea
+/aws_serverless_application_model.out.yaml
+/handler.so
+/Makefile
+/package.zip
