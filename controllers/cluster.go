@@ -1,10 +1,11 @@
-package main
+package controllers
 
 import (
+	"fmt"
+
+	"github.com/couchbaselabs/cbbootstrap/cbcluster"
 	"github.com/couchbaselabs/cbbootstrap/goa/app"
 	"github.com/goadesign/goa"
-	"fmt"
-	"github.com/couchbaselabs/cbbootstrap/cbcluster"
 )
 
 // ClusterController implements the cluster resource.
@@ -19,7 +20,6 @@ func NewClusterController(service *goa.Service) *ClusterController {
 
 // CreateOrJoin runs the create_or_join action.
 func (c *ClusterController) CreateOrJoin(ctx *app.CreateOrJoinClusterContext) error {
-
 	// ClusterController_CreateOrJoin: start_implement
 
 	dynamoDb := cbcluster.CreateDynamoDbSession()
@@ -37,7 +37,5 @@ func (c *ClusterController) CreateOrJoin(ctx *app.CreateOrJoinClusterContext) er
 	}
 
 	return ctx.OK([]byte(fmt.Sprintf("Got cbNode: %+v", cbNode)))
-
-	// ClusterController_CreateOrJoin: end_implement
 
 }

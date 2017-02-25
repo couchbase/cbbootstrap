@@ -4,16 +4,12 @@ package main
 import "C"
 
 import (
-
-	"log"
-	"fmt"
-	"github.com/eawsy/aws-lambda-go-net/service/lambda/runtime/net"
 	"github.com/eawsy/aws-lambda-go-net/service/lambda/runtime/net/apigatewayproxy"
-	"net/http"
-	"github.com/couchbaselabs/cbbootstrap/cbcluster"
 	"github.com/goadesign/goa"
+	"github.com/goadesign/goa/middleware"
+	"github.com/couchbaselabs/cbbootstrap/goa/app"
+	"github.com/couchbaselabs/cbbootstrap/controllers"
 )
-
 
 func main() {
 
@@ -30,17 +26,28 @@ func main() {
 
 	log.Printf("done")*/
 
+	// Create service
 	service := goa.New("CBBootstrap REST API")
 
-	accountController := controllers.NewClusterController(service, coreService)
-	app.MountAccountController(service, accountController)
+	// Mount middleware
+	service.Use(middleware.RequestID())
+	service.Use(middleware.LogRequest(true))
+	service.Use(middleware.ErrorHandler(service, true))
+	service.Use(middleware.Recover())
+
+	// Mount "cluster" controller
+	c := controllers.NewClusterController(service)
+	app.MountClusterController(service, c)
+
+	// Start service
+	if err := service.ListenAndServe(":8080"); err != nil {
+		service.LogError("startup", "err", err)
+	}
 
 }
 
-
 // Handle is the exported handler called by AWS Lambda.
 var Handle apigatewayproxy.Handler
-
 
 //func init() {
 //	ln := net.Listen()
@@ -67,4 +74,3 @@ var Handle apigatewayproxy.Handler
 //	w.Write([]byte(fmt.Sprintf("Got cbNode: %+v", cbNode)))
 //
 //}
-
