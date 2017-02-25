@@ -91,14 +91,18 @@ func (cbnode *CouchbaseNode) CreateOrJoinCuster() error {
 
 }
 
+func createDynamoDbSession() *dynamodb.DynamoDB {
+	// connect to dynamodb
+	awsSession := session.New()
+	dynamoDb := dynamodb.New(awsSession)
+	return dynamoDb
+}
 
 func main() {
 
 	log.Printf("hello world")
 
-	// connect to dynamodb
-	awsSession := session.New()
-	dynamoDb := dynamodb.New(awsSession)
+	dynamoDb := createDynamoDbSession()
 
 	// create a new CouchbaseNode
 	cbNode := NewCouchbaseNode("foo3", "127.0.0.1", dynamoDb)
@@ -127,6 +131,17 @@ func init() {
 }
 
 func handle(w http.ResponseWriter, r *http.Request) {
-	w.Write([]byte("Hello, World!"))
+
+	dynamoDb := createDynamoDbSession()
+
+	// create a new CouchbaseNode
+	cbNode := NewCouchbaseNode("foo4", "127.0.0.1", dynamoDb)
+	err := cbNode.CreateOrJoinCuster()
+	if err != nil {
+		w.Write([]byte(err.Error()))
+	}
+
+	w.Write([]byte(fmt.Sprintf("Got cbNode: %+v", cbNode)))
+
 }
 
