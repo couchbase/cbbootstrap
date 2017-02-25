@@ -48,13 +48,16 @@ This creates or updates a cluster object in the system.  If it’s the first nod
 
 Request
 
+```
 {
     “cluster_id”: “safdasdf3234",
     “node_ip_addr_or_hostname”: “ip-233.11.2.5"
 }   
+```
 
 Response
 
+```
 {
     “cluster_already_initialized”: true | false,  // if false, then this node becomes the initial node that other nodes try to join
     “initial_node_ip_addr_or_hostname”: “ip-233.11.2.5”,  // empty if cluster_already_initialized
@@ -70,5 +73,5 @@ Response
     ]
     
 }
-
+```
    
