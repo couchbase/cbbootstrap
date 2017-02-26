@@ -1,3 +1,17 @@
+A REST API intendended to be run as a public service to help bootstrap Couchbase distributed database clusters, in other words, to make it easy to stand up a Couchbase cluster from scratch by providing an API for Couchbase nodes to:
+
+- Discover whether they are the first node in the cluster, and need to run cluster-init so other nodes can join them
+
+or
+
+- If the cluster is already initialized, discover the IP address / hostname of the node they should join.
+
+## Backstory
+
+Needed for the highly dynamic and automated [sg-autoscale](http://github.com/couchbaselabs/sg-autoscale) project, has the requirement to be able to easily resize Couchbase server clusters with minimal human intervention.
+
+This is also useful when trying to run Couchbase in container orchestration platforms like Kubernetes or Docker Swarm.
+
 
 ## Deploy to AWS Lambda
 
