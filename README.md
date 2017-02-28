@@ -89,4 +89,8 @@ $ curl https://5e61vqxs5f.execute-api.us-east-1.amazonaws.com/Prod
 ```
 
 
-   
+Call API
+
+```
+$ curl -X POST -d '{"cluster_id": "foo15", "node_ip_addr_or_hostname": "bar2"}' http://localhost:8080/cluster
+```

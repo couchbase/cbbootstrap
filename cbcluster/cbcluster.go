@@ -70,11 +70,11 @@ func (cluster *CouchbaseCluster) CreateOrJoinCuster(iPAddrOrHostname string) (Co
 			if awsErr.Code() == dynamodb.ErrCodeConditionalCheckFailedException {
 				log.Printf("Cluster already exists!  Err: %+v PutItemOutput: %+v", err, putItemOutPut)
 
-				/*// now we need to do a fetch to get the initial node ip addr or host
+				// now we need to do a fetch to get the initial node ip addr or host
 				err2 := cbNode.LoadFromDatabase()
 				if err2 != nil {
 					return cbNode, err2
-				}*/
+				}
 
 				log.Printf("Loaded cbnode from db: %+v", cbNode)
 
@@ -111,7 +111,7 @@ func (cluster *CouchbaseCluster) CreateOrJoinCuster(iPAddrOrHostname string) (Co
 
 func (cbnode *CouchbaseNode) LoadFromDatabase() error {
 
-	attribute := dynamodb.AttributeValue{S: &cbnode.CouchbaseCluster.ClusterId}
+	attribute := dynamodb.AttributeValue{S: aws.String(cbnode.CouchbaseCluster.ClusterId)}
 	query := map[string]*dynamodb.AttributeValue{"cluster_id": &attribute}
 
 	getItemInput := &dynamodb.GetItemInput{
@@ -125,7 +125,7 @@ func (cbnode *CouchbaseNode) LoadFromDatabase() error {
 	}
 
 	initialNodeIpOrHostnameAttribute := getItemOutput.Item["initial_node_ip_addr_or_hostname"]
-	cbnode.IpAddrOrHostname = initialNodeIpOrHostnameAttribute.String()
+	cbnode.IpAddrOrHostname = *initialNodeIpOrHostnameAttribute.S
 
 	return nil
 
