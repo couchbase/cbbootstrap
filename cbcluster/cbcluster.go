@@ -4,7 +4,6 @@ import (
 	"log"
 
 	"github.com/aws/aws-sdk-go/aws"
-	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/dynamodb"
 	"github.com/aws/aws-sdk-go/service/dynamodb/dynamodbiface"
 	"github.com/aws/aws-sdk-go/aws/awserr"
@@ -37,30 +36,12 @@ type CouchbaseCluster struct {
 	DynamoDb  dynamodbiface.DynamoDBAPI // DynamoDB driver or mock
 }
 
-type CouchbaseNode struct {
-	CouchbaseCluster *CouchbaseCluster
-	IpAddrOrHostname string // The ip address or hostname for this Couchbase Node
-	InitialNode      bool   // Whether this is the initial node that others can join
-}
 
 func (cluster *CouchbaseCluster) CreateOrJoinCuster(iPAddrOrHostname string) (CouchbaseNode, error) {
 
-
 	// Create a new cluster object from database, or retrieve existing
 	// -------------------------------------------------------------------------------------------------------------
-	putItemInput := &dynamodb.PutItemInput{
-		Item: map[string]*dynamodb.AttributeValue{
-			"cluster_id": {
-				S: aws.String(cluster.ClusterId),
-			},
-			"initial_node_ip_addr_or_hostname": {
-				S: aws.String(iPAddrOrHostname),
-			},
-		},
-		TableName:           aws.String("cb-bootstrap"),
-		ConditionExpression: aws.String("attribute_not_exists(cluster_id)"),
-	}
-	putItemOutPut, err := cluster.DynamoDb.PutItem(putItemInput)
+	err := cluster.DBCreate(iPAddrOrHostname)
 	if err == nil {
 
 		// Create succeeded -- which means iPAddrOrHostname successfully became the inital node
@@ -91,13 +72,13 @@ func (cluster *CouchbaseCluster) CreateOrJoinCuster(iPAddrOrHostname string) (Co
 		log.Printf("Expected an awserr.Error with dynamodb.ErrCodeConditionalCheckFailedException, got :%+v", awsErr)
 		return CouchbaseNode{}, err
 	}
-	
-	log.Printf("Cluster already exists!  Fetching existing initial node from db.  PutItemOutput: %+v", err, putItemOutPut)
+
+	log.Printf("Cluster already exists!  Fetching existing initial node from db.")
 
 	// now we need to do a fetch to get the initial node ip addr or host
 	cbNode := cluster.NewCouchbaseNode()
 
-	err = cbNode.LoadFromDatabase()
+	err = cbNode.DBLoad()
 	if err != nil {
 		return CouchbaseNode{}, err
 	}
@@ -110,6 +91,27 @@ func (cluster *CouchbaseCluster) CreateOrJoinCuster(iPAddrOrHostname string) (Co
 
 }
 
+
+func (cluster *CouchbaseCluster) DBCreate(iPAddrOrHostname string) error {
+
+	putItemInput := &dynamodb.PutItemInput{
+		Item: map[string]*dynamodb.AttributeValue{
+			"cluster_id": {
+				S: aws.String(cluster.ClusterId),
+			},
+			"initial_node_ip_addr_or_hostname": {
+				S: aws.String(iPAddrOrHostname),
+			},
+		},
+		TableName:           aws.String("cb-bootstrap"),
+		ConditionExpression: aws.String("attribute_not_exists(cluster_id)"),
+	}
+	putItemOutPut, err := cluster.DynamoDb.PutItem(putItemInput)
+	log.Printf("Cluster.DBCreate() PutItemOutput: %+v.  err: %v", putItemOutPut, err)
+	return err
+
+}
+
 func (cluster *CouchbaseCluster) NewCouchbaseNode() CouchbaseNode {
 
 	return CouchbaseNode{
@@ -118,33 +120,3 @@ func (cluster *CouchbaseCluster) NewCouchbaseNode() CouchbaseNode {
 
 }
 
-
-func (cbnode *CouchbaseNode) LoadFromDatabase() error {
-
-	attribute := dynamodb.AttributeValue{S: aws.String(cbnode.CouchbaseCluster.ClusterId)}
-	query := map[string]*dynamodb.AttributeValue{"cluster_id": &attribute}
-
-	getItemInput := &dynamodb.GetItemInput{
-		Key: query,
-		ConsistentRead: aws.Bool(true),
-		TableName:           aws.String("cb-bootstrap"),
-	}
-	getItemOutput, err := cbnode.CouchbaseCluster.DynamoDb.GetItem(getItemInput)
-	if err != nil {
-		return err
-	}
-
-	initialNodeIpOrHostnameAttribute := getItemOutput.Item["initial_node_ip_addr_or_hostname"]
-	cbnode.IpAddrOrHostname = *initialNodeIpOrHostnameAttribute.S
-
-	return nil
-
-}
-
-
-func CreateDynamoDbSession() *dynamodb.DynamoDB {
-	// connect to dynamodb
-	awsSession := session.New()
-	dynamoDb := dynamodb.New(awsSession)
-	return dynamoDb
-}
