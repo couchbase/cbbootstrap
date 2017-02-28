@@ -1,16 +1,15 @@
 package cbcluster
 
 import (
-	"github.com/aws/aws-sdk-go/service/dynamodb"
 	"github.com/aws/aws-sdk-go/aws"
+	"github.com/aws/aws-sdk-go/service/dynamodb"
 )
 
 type CouchbaseNode struct {
 	CouchbaseCluster *CouchbaseCluster
 	IpAddrOrHostname string // The ip address or hostname for this Couchbase Node
-	InitialNode      bool   // Whether this is the initial node that others can join
+	IsInitialNode    bool   // Whether this is the initial node that others can join
 }
-
 
 func (cbnode *CouchbaseNode) DBLoad() error {
 
@@ -18,9 +17,9 @@ func (cbnode *CouchbaseNode) DBLoad() error {
 	query := map[string]*dynamodb.AttributeValue{"cluster_id": &attribute}
 
 	getItemInput := &dynamodb.GetItemInput{
-		Key: query,
+		Key:            query,
 		ConsistentRead: aws.Bool(true),
-		TableName:           aws.String("cb-bootstrap"),
+		TableName:      aws.String("cb-bootstrap"),
 	}
 	getItemOutput, err := cbnode.CouchbaseCluster.DynamoDb.GetItem(getItemInput)
 	if err != nil {

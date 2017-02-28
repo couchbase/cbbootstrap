@@ -22,6 +22,8 @@ type Couchbasecluster struct {
 	ClusterID string `form:"cluster_id" json:"cluster_id" xml:"cluster_id"`
 	// The initial node ip address or host that can be used to join cluster
 	InitialNodeIPAddrOrHostname string `form:"initial_node_ip_addr_or_hostname" json:"initial_node_ip_addr_or_hostname" xml:"initial_node_ip_addr_or_hostname"`
+	// Whether the node_ip_addr_or_hostname passed in the request represents the initial node in the cluster
+	IsInitialNode bool `form:"is_initial_node" json:"is_initial_node" xml:"is_initial_node"`
 }
 
 // Validate validates the Couchbasecluster media type instance.

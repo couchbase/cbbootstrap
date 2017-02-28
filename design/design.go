@@ -50,13 +50,17 @@ var CouchbaseClusterJson = MediaType("application/vnd.couchbasecluster+json", fu
 		Attribute("initial_node_ip_addr_or_hostname", String, "The initial node ip address or host that can be used to join cluster", func() {
 			Example("10.1.1.1")
 		})
+		Attribute("is_initial_node", Boolean, "Whether the node_ip_addr_or_hostname passed in the request represents the initial node in the cluster", func() {
+			Example(true)
+		})
 
-		Required("cluster_id", "initial_node_ip_addr_or_hostname")
+		Required("cluster_id", "initial_node_ip_addr_or_hostname", "is_initial_node")
 	})
 
 	View("default", func() {
 		Attribute("cluster_id")
 		Attribute("initial_node_ip_addr_or_hostname")
+		Attribute("is_initial_node")
 	})
 
 })

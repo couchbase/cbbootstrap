@@ -49,7 +49,7 @@ func (cluster *CouchbaseCluster) CreateOrJoinCuster(iPAddrOrHostname string) (Co
 		cbNode := cluster.NewCouchbaseNode()
 
 		// no error,
-		cbNode.InitialNode = true
+		cbNode.IsInitialNode = true
 		cbNode.IpAddrOrHostname = iPAddrOrHostname
 
 		return cbNode, nil
@@ -85,7 +85,7 @@ func (cluster *CouchbaseCluster) CreateOrJoinCuster(iPAddrOrHostname string) (Co
 
 	log.Printf("Loaded cbnode from db: %+v", cbNode)
 
-	cbNode.InitialNode = false
+	cbNode.IsInitialNode = false
 
 	return cbNode, nil
 

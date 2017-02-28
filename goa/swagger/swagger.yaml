@@ -6,6 +6,7 @@ definitions:
     example:
       cluster_id: FooAWSStack123
       initial_node_ip_addr_or_hostname: 10.1.1.1
+      is_initial_node: true
     properties:
       cluster_id:
         description: The cluster id
@@ -16,9 +17,15 @@ definitions:
           cluster
         example: 10.1.1.1
         type: string
+      is_initial_node:
+        description: Whether the node_ip_addr_or_hostname passed in the request represents
+          the initial node in the cluster
+        example: true
+        type: boolean
     required:
     - cluster_id
     - initial_node_ip_addr_or_hostname
+    - is_initial_node
     title: 'Mediatype identifier: application/vnd.couchbasecluster+json'
     type: object
   CreateOrJoinClusterPayload:

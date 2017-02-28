@@ -39,6 +39,7 @@ func (c *ClusterController) CreateOrJoin(ctx *app.CreateOrJoinClusterContext) er
 	cbClusterReturnVal := app.Couchbasecluster{
 		ClusterID: cbNode.CouchbaseCluster.ClusterId,
 		InitialNodeIPAddrOrHostname: cbNode.IpAddrOrHostname,
+		IsInitialNode: cbNode.IsInitialNode,
 	}
 
 	return ctx.OK(&cbClusterReturnVal)
