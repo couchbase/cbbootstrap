@@ -27,10 +27,10 @@ import (
 )
 
 // CreateOrJoinClusterOK runs the method CreateOrJoin of the given controller with the given parameters and payload.
-// It returns the response writer so it's possible to inspect the response headers.
+// It returns the response writer so it's possible to inspect the response headers and the media type struct written to the response.
 // If ctx is nil then context.Background() is used.
 // If service is nil then a default service is created.
-func CreateOrJoinClusterOK(t goatest.TInterface, ctx context.Context, service *goa.Service, ctrl app.ClusterController, payload *app.CreateOrJoinClusterPayload) http.ResponseWriter {
+func CreateOrJoinClusterOK(t goatest.TInterface, ctx context.Context, service *goa.Service, ctrl app.ClusterController, payload *app.CreateOrJoinClusterPayload) (http.ResponseWriter, *app.Couchbasecluster) {
 	// Setup service
 	var (
 		logBuf bytes.Buffer
@@ -56,7 +56,7 @@ func CreateOrJoinClusterOK(t goatest.TInterface, ctx context.Context, service *g
 			panic(err) // bug
 		}
 		t.Errorf("unexpected payload validation error: %+v", e)
-		return nil
+		return nil, nil
 	}
 
 	// Setup request context
@@ -89,7 +89,19 @@ func CreateOrJoinClusterOK(t goatest.TInterface, ctx context.Context, service *g
 	if rw.Code != 200 {
 		t.Errorf("invalid response status code: got %+v, expected 200", rw.Code)
 	}
+	var mt *app.Couchbasecluster
+	if resp != nil {
+		var ok bool
+		mt, ok = resp.(*app.Couchbasecluster)
+		if !ok {
+			t.Fatalf("invalid response media: got %+v, expected instance of app.Couchbasecluster", resp)
+		}
+		err = mt.Validate()
+		if err != nil {
+			t.Errorf("invalid response media type: %s", err)
+		}
+	}
 
 	// Return results
-	return rw
+	return rw, mt
 }

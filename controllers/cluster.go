@@ -1,7 +1,6 @@
 package controllers
 
 import (
-	"fmt"
 
 	"github.com/couchbaselabs/cbbootstrap/cbcluster"
 	"github.com/couchbaselabs/cbbootstrap/goa/app"
@@ -32,10 +31,19 @@ func (c *ClusterController) CreateOrJoin(ctx *app.CreateOrJoinClusterContext) er
 
 	cbNode, err := cbcluster.CreateOrJoinCuster(*ctx.Payload.NodeIPAddrOrHostname)
 	if err != nil {
-		return ctx.OK([]byte(err.Error()))
+		ctx.ResponseData.WriteHeader(500)
+		_, err2 := ctx.ResponseData.Write([]byte(err.Error()))
+		return err2
 	}
 
 
-	return ctx.OK([]byte(fmt.Sprintf("Got cbNode: %+v", cbNode)))
+	// return ctx.OK([]byte(fmt.Sprintf("Got cbNode: %+v", cbNode)))
+
+	cbClusterReturnVal := app.Couchbasecluster{
+		ClusterID: cbNode.CouchbaseCluster.ClusterId,
+		InitialNodeIPAddrOrHostname: cbNode.IpAddrOrHostname,
+	}
+
+	return ctx.OK(&cbClusterReturnVal)
 
 }

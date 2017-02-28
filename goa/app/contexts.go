@@ -37,9 +37,7 @@ func NewCreateOrJoinClusterContext(ctx context.Context, service *goa.Service) (*
 }
 
 // OK sends a HTTP response with status code 200.
-func (ctx *CreateOrJoinClusterContext) OK(resp []byte) error {
-	ctx.ResponseData.Header().Set("Content-Type", "application/json")
-	ctx.ResponseData.WriteHeader(200)
-	_, err := ctx.ResponseData.Write(resp)
-	return err
+func (ctx *CreateOrJoinClusterContext) OK(r *Couchbasecluster) error {
+	ctx.ResponseData.Header().Set("Content-Type", "application/vnd.couchbasecluster+json")
+	return ctx.ResponseData.Service.Send(ctx.Context, 200, r)
 }
