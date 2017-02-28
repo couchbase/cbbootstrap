@@ -36,9 +36,6 @@ func (c *ClusterController) CreateOrJoin(ctx *app.CreateOrJoinClusterContext) er
 		return err2
 	}
 
-
-	// return ctx.OK([]byte(fmt.Sprintf("Got cbNode: %+v", cbNode)))
-
 	cbClusterReturnVal := app.Couchbasecluster{
 		ClusterID: cbNode.CouchbaseCluster.ClusterId,
 		InitialNodeIPAddrOrHostname: cbNode.IpAddrOrHostname,
