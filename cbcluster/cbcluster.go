@@ -7,6 +7,7 @@ import (
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/dynamodb"
 	"github.com/aws/aws-sdk-go/service/dynamodb/dynamodbiface"
+	"github.com/aws/aws-sdk-go/aws/awserr"
 )
 
 /*
@@ -65,23 +66,35 @@ func (cluster *CouchbaseCluster) CreateOrJoinCuster(iPAddrOrHostname string) (Co
 	putItemOutPut, err := cluster.DynamoDb.PutItem(putItemInput)
 	if err != nil {
 
-		if err.Error() == dynamodb.ErrCodeConditionalCheckFailedException {
-			log.Printf("Cluster already exists!  Err: %+v PutItemOutput: %+v", err, putItemOutPut)
+		if awsErr, ok := err.(awserr.Error); ok {
+			if awsErr.Code() == dynamodb.ErrCodeConditionalCheckFailedException {
+				log.Printf("Cluster already exists!  Err: %+v PutItemOutput: %+v", err, putItemOutPut)
 
-			// now we need to do a fetch to get the initial node ip addr or host
-			err2 := cbNode.LoadFromDatabase()
-			if err2 != nil {
-				return cbNode, err2
+				/*// now we need to do a fetch to get the initial node ip addr or host
+				err2 := cbNode.LoadFromDatabase()
+				if err2 != nil {
+					return cbNode, err2
+				}*/
+
+				log.Printf("Loaded cbnode from db: %+v", cbNode)
+
+				cbNode.InitialNode = false
+
+				return cbNode, nil
+			} else {
+				// unexpected error
+				log.Printf("Unexpected errort: %v", err)
+				return cbNode, err
 			}
-
-			log.Printf("Loaded cbnode from db: %+v", cbNode)
-
-			cbNode.InitialNode = false
-
+		} else {
+			// unexpected error
+			log.Printf("Unexpected errort: %v", err)
 			return cbNode, err
 		}
 
+
 		// unexpected error
+		log.Printf("Unexpected errort: %v", err)
 		return cbNode, err
 
 	}
