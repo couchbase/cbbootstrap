@@ -24,17 +24,17 @@ func (c *ClusterController) CreateOrJoin(ctx *app.CreateOrJoinClusterContext) er
 
 	dynamoDb := cbcluster.CreateDynamoDbSession()
 
-	// create a new CouchbaseNode
-	cbNode := cbcluster.NewCouchbaseNode(
-		*ctx.Payload.ClusterID,
-		*ctx.Payload.NodeIPAddrOrHostname,
-		dynamoDb,
-	)
 
-	err := cbNode.CreateOrJoinCuster()
+	cbcluster := cbcluster.CouchbaseCluster{
+		ClusterId: *ctx.Payload.ClusterID,
+		DynamoDb: dynamoDb,
+	}
+
+	cbNode, err := cbcluster.CreateOrJoinCuster(*ctx.Payload.NodeIPAddrOrHostname)
 	if err != nil {
 		return ctx.OK([]byte(err.Error()))
 	}
+
 
 	return ctx.OK([]byte(fmt.Sprintf("Got cbNode: %+v", cbNode)))
 
