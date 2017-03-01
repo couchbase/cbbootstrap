@@ -6,6 +6,10 @@ or
 
 - If the cluster is already initialized, discover the IP address / hostname of the node they should join.
 
+## Deployment Architecture
+
+![architecture](docs/aws-deployment-architecture.png)
+
 ## Backstory
 
 Needed for the dynamic and automated [sg-autoscale](http://github.com/couchbaselabs/sg-autoscale) project to be able to start a CloudFormation and have the Couchbase Server cluster initialize itself based on parameters.
