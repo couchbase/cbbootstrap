@@ -8,46 +8,13 @@ or
 
 ## Backstory
 
-Needed for the highly dynamic and automated [sg-autoscale](http://github.com/couchbaselabs/sg-autoscale) project, has the requirement to be able to easily resize Couchbase server clusters with minimal human intervention.
+Needed for the dynamic and automated [sg-autoscale](http://github.com/couchbaselabs/sg-autoscale) project to be able to start a CloudFormation and have the Couchbase Server cluster initialize itself based on parameters.
 
-This is also useful when trying to run Couchbase in container orchestration platforms like Kubernetes or Docker Swarm.
+This could also be useful when trying to run Couchbase in container orchestration platforms like Kubernetes or Docker Swarm.
 
 ## REST API Definition
 
-Endpoints
-
-- POST /cluster/add_or_create
-
-This creates or updates a cluster object in the system.  If it’s the first node in this cluster (defined by cluster_id), then 
-
-Request
-
-```
-{
-    “cluster_id”: “safdasdf3234",
-    “node_ip_addr_or_hostname”: “ip-233.11.2.5"
-}   
-```
-
-Response
-
-```
-{
-    “cluster_already_initialized”: true | false,  // if false, then this node becomes the initial node that other nodes try to join
-    “initial_node_ip_addr_or_hostname”: “ip-233.11.2.5”,  // empty if cluster_already_initialized
-    "all_known_nodes": [
-        {
-		“node_ip_addr_or_hostname”: “ip-233.11.2.5",
-		"last_seen": <date>
-        },
-        {
-		“node_ip_addr_or_hostname”: “ip-233.11.2.18",
-		"last_seen": <date>
-        },
-    ]
-    
-}
-```
+See [swagger.yaml](https://github.com/couchbase/cbbootstrap/blob/master/goa/swagger/swagger.yaml)
 
 ## Deploy to AWS Lambda
 
