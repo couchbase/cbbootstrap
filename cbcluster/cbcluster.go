@@ -9,28 +9,6 @@ import (
 	"github.com/aws/aws-sdk-go/aws/awserr"
 )
 
-/*
-
-   #import cb_bootstrap
-
-   # Wrapper around bootstrap.couchbase.io REST API service which has global view of
-   # cluster and can track which node is the boostrap
-
-   #couchbase_cluster = cb_bootstrap.CouchbaseCluster(cluster_token, node_id)
-   #couchbase_cluster.SetAdminUser("Administrator")
-   #couchbase_cluster.SetAdminPassword("Password")
-   #couchbase_cluster.SetCouchbaseServerName(socket.gethostname())  # how to get the public ip?
-   #couchbase_cluster.WireUp()  # blocks until it either sets up as initial node or joins other nodes
-   #couchbase_cluster.AddBucketIfMissing(
-   #   Name="data-bucket",
-   #   PercentRam=0.50,
-   #)
-   #couchbase_cluster.AddBucketIfMissing(
-   #   Name="index-bucket",
-   #   PercentRam=0.50,
-   #)
-*/
-
 type CouchbaseCluster struct {
 	ClusterId string                    // Something to uniquely identify the cluster
 	DynamoDb  dynamodbiface.DynamoDBAPI // DynamoDB driver or mock
