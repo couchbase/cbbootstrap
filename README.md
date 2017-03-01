@@ -10,6 +10,10 @@ or
 
 ![architecture](docs/aws-deployment-architecture.png)
 
+## Sample Use
+
+See [cbbootstrap.py](https://github.com/couchbaselabs/sg-autoscale/blob/master/src/cbbootstrap.py) -- this is intended to be called from a `user-data.sh` script on EC2 instance launch, but can be used in other scenarios.
+
 ## Backstory
 
 Needed for the dynamic and automated [sg-autoscale](http://github.com/couchbaselabs/sg-autoscale) project to be able to start a CloudFormation and have the Couchbase Server cluster initialize itself based on parameters.
