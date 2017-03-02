@@ -7,8 +7,8 @@ import (
 	"github.com/eawsy/aws-lambda-go-net/service/lambda/runtime/net/apigatewayproxy"
 	"github.com/goadesign/goa"
 	"github.com/goadesign/goa/middleware"
-	"github.com/couchbaselabs/cbbootstrap/goa/app"
-	"github.com/couchbaselabs/cbbootstrap/controllers"
+	"github.com/couchbase/cbbootstrap/goa/app"
+	"github.com/couchbase/cbbootstrap/controllers"
 	"github.com/eawsy/aws-lambda-go-net/service/lambda/runtime/net"
 	"net/http"
 )

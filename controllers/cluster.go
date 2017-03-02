@@ -2,8 +2,8 @@ package controllers
 
 import (
 
-	"github.com/couchbaselabs/cbbootstrap/cbcluster"
-	"github.com/couchbaselabs/cbbootstrap/goa/app"
+	"github.com/couchbase/cbbootstrap/cbcluster"
+	"github.com/couchbase/cbbootstrap/goa/app"
 	"github.com/goadesign/goa"
 )
 
@@ -35,6 +35,41 @@ func (c *ClusterController) CreateOrJoin(ctx *app.CreateOrJoinClusterContext) er
 		_, err2 := ctx.ResponseData.Write([]byte(err.Error()))
 		return err2
 	}
+
+	cbClusterReturnVal := app.Couchbasecluster{
+		ClusterID: cbNode.CouchbaseCluster.ClusterId,
+		InitialNodeIPAddrOrHostname: cbNode.IpAddrOrHostname,
+		IsInitialNode: cbNode.IsInitialNode,
+	}
+
+	return ctx.OK(&cbClusterReturnVal)
+
+}
+
+
+// Status runs the status action.
+func (c *ClusterController) Status(ctx *app.StatusClusterContext) error {
+	// ClusterController_Status: start_implement
+
+	dynamoDb := cbcluster.CreateDynamoDbSession()
+
+	cbcluster := cbcluster.CouchbaseCluster{
+		ClusterId: ctx.ClusterID,
+		DynamoDb: dynamoDb,
+	}
+
+	// Load existing
+	cbNode := cbcluster.NewCouchbaseNode()
+
+	// Load from DB
+	err := cbNode.DBLoad()
+	if err != nil {
+		ctx.ResponseData.WriteHeader(500)
+		_, err2 := ctx.ResponseData.Write([]byte(err.Error()))
+		return err2
+	}
+
+	cbNode.IsInitialNode = true
 
 	cbClusterReturnVal := app.Couchbasecluster{
 		ClusterID: cbNode.CouchbaseCluster.ClusterId,

@@ -29,6 +29,16 @@ var _ = Resource("cluster", func() {
 		Response(OK)
 	})
 
+	Action("status", func() {
+
+		Routing(GET(":cluster_id"))
+		Description("Get Couchbase Cluster by ID")
+		Params(func() {                      // Defines the request parameters
+			Param("cluster_id", String, "Cluster ID")   // Defines left parameter as path segment
+		})
+		Response(OK)
+	})
+
 
 })
 

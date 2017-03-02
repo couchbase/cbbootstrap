@@ -2,8 +2,8 @@ package main
 
 import (
 	"fmt"
-	"github.com/couchbaselabs/cbbootstrap/goa/client"
-	"github.com/couchbaselabs/cbbootstrap/goa/tool/cli"
+	"github.com/couchbase/cbbootstrap/goa/client"
+	"github.com/couchbase/cbbootstrap/goa/tool/cli"
 	goaclient "github.com/goadesign/goa/client"
 	"github.com/spf13/cobra"
 	"net/http"

@@ -26,7 +26,7 @@ definitions:
     - cluster_id
     - initial_node_ip_addr_or_hostname
     - is_initial_node
-    title: 'Mediatype identifier: application/vnd.couchbasecluster+json'
+    title: 'Mediatype identifier: application/vnd.couchbasecluster+json; view=default'
     type: object
   CreateOrJoinClusterPayload:
     example:
@@ -71,6 +71,27 @@ paths:
       - http
       - https
       summary: create_or_join cluster
+      tags:
+      - cluster
+  /cluster/{cluster_id}:
+    get:
+      description: Get Couchbase Cluster by ID
+      operationId: cluster#status
+      parameters:
+      - description: Cluster ID
+        in: path
+        name: cluster_id
+        required: true
+        type: string
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/Couchbasecluster'
+      schemes:
+      - http
+      - https
+      summary: status cluster
       tags:
       - cluster
 produces:
