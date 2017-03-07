@@ -35,6 +35,13 @@ type (
 		PrettyPrint bool
 	}
 
+	// GetStatusClusterCommand is the command line data structure for the get_status action of cluster
+	GetStatusClusterCommand struct {
+		Payload     string
+		ContentType string
+		PrettyPrint bool
+	}
+
 	// StatusClusterCommand is the command line data structure for the status action of cluster
 	StatusClusterCommand struct {
 		// Cluster ID
@@ -69,17 +76,39 @@ Payload example:
 	command.AddCommand(sub)
 	app.AddCommand(command)
 	command = &cobra.Command{
-		Use:   "status",
-		Short: `Get Couchbase Cluster by ID`,
+		Use:   "get-status",
+		Short: `Get Couchbase Cluster by ID.  Works around URL encoding issues seen in GET with :cluster_id URL param`,
 	}
-	tmp2 := new(StatusClusterCommand)
+	tmp2 := new(GetStatusClusterCommand)
 	sub = &cobra.Command{
-		Use:   `cluster ["/cluster/CLUSTER_ID"]`,
+		Use:   `cluster ["/cluster/get_status"]`,
 		Short: ``,
-		RunE:  func(cmd *cobra.Command, args []string) error { return tmp2.Run(c, args) },
+		Long: `
+
+Payload example:
+
+{
+   "cluster_id": "3gj",
+   "node_ip_addr_or_hostname": "5"
+}`,
+		RunE: func(cmd *cobra.Command, args []string) error { return tmp2.Run(c, args) },
 	}
 	tmp2.RegisterFlags(sub, c)
 	sub.PersistentFlags().BoolVar(&tmp2.PrettyPrint, "pp", false, "Pretty print response body")
+	command.AddCommand(sub)
+	app.AddCommand(command)
+	command = &cobra.Command{
+		Use:   "status",
+		Short: `Get Couchbase Cluster by ID`,
+	}
+	tmp3 := new(StatusClusterCommand)
+	sub = &cobra.Command{
+		Use:   `cluster ["/cluster/CLUSTER_ID"]`,
+		Short: ``,
+		RunE:  func(cmd *cobra.Command, args []string) error { return tmp3.Run(c, args) },
+	}
+	tmp3.RegisterFlags(sub, c)
+	sub.PersistentFlags().BoolVar(&tmp3.PrettyPrint, "pp", false, "Pretty print response body")
 	command.AddCommand(sub)
 	app.AddCommand(command)
 }
@@ -266,6 +295,39 @@ func (cmd *CreateOrJoinClusterCommand) Run(c *client.Client, args []string) erro
 
 // RegisterFlags registers the command flags with the command line.
 func (cmd *CreateOrJoinClusterCommand) RegisterFlags(cc *cobra.Command, c *client.Client) {
+	cc.Flags().StringVar(&cmd.Payload, "payload", "", "Request body encoded in JSON")
+	cc.Flags().StringVar(&cmd.ContentType, "content", "", "Request content type override, e.g. 'application/x-www-form-urlencoded'")
+}
+
+// Run makes the HTTP request corresponding to the GetStatusClusterCommand command.
+func (cmd *GetStatusClusterCommand) Run(c *client.Client, args []string) error {
+	var path string
+	if len(args) > 0 {
+		path = args[0]
+	} else {
+		path = "/cluster/get_status"
+	}
+	var payload client.GetStatusClusterPayload
+	if cmd.Payload != "" {
+		err := json.Unmarshal([]byte(cmd.Payload), &payload)
+		if err != nil {
+			return fmt.Errorf("failed to deserialize payload: %s", err)
+		}
+	}
+	logger := goa.NewLogger(log.New(os.Stderr, "", log.LstdFlags))
+	ctx := goa.WithLogger(context.Background(), logger)
+	resp, err := c.GetStatusCluster(ctx, path, &payload)
+	if err != nil {
+		goa.LogError(ctx, "failed", "err", err)
+		return err
+	}
+
+	goaclient.HandleResponse(c.Client, resp, cmd.PrettyPrint)
+	return nil
+}
+
+// RegisterFlags registers the command flags with the command line.
+func (cmd *GetStatusClusterCommand) RegisterFlags(cc *cobra.Command, c *client.Client) {
 	cc.Flags().StringVar(&cmd.Payload, "payload", "", "Request body encoded in JSON")
 	cc.Flags().StringVar(&cmd.ContentType, "content", "", "Request content type override, e.g. 'application/x-www-form-urlencoded'")
 }

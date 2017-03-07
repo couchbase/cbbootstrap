@@ -51,10 +51,37 @@ func (c *ClusterController) CreateOrJoin(ctx *app.CreateOrJoinClusterContext) er
 func (c *ClusterController) Status(ctx *app.StatusClusterContext) error {
 	// ClusterController_Status: start_implement
 
+	cbClusterReturnVal, err := getClusterStatus(ctx.ClusterID)
+	if err != nil {
+		ctx.ResponseData.WriteHeader(500)
+		_, err2 := ctx.ResponseData.Write([]byte(err.Error()))
+		return err2
+	}
+
+	return ctx.OK(&cbClusterReturnVal)
+
+}
+
+// GetStatus runs the get_status action.
+func (c *ClusterController) GetStatus(ctx *app.GetStatusClusterContext) error {
+	// ClusterController_GetStatus: start_implement
+
+	cbClusterReturnVal, err := getClusterStatus(ctx.Payload.ClusterID)
+	if err != nil {
+		ctx.ResponseData.WriteHeader(500)
+		_, err2 := ctx.ResponseData.Write([]byte(err.Error()))
+		return err2
+	}
+
+	return ctx.OK(&cbClusterReturnVal)
+}
+
+func getClusterStatus(ClusterId string) (app.Couchbasecluster, error) {
+
 	dynamoDb := cbcluster.CreateDynamoDbSession()
 
 	cbcluster := cbcluster.CouchbaseCluster{
-		ClusterId: ctx.ClusterID,
+		ClusterId: ClusterId,
 		DynamoDb: dynamoDb,
 	}
 
@@ -64,9 +91,7 @@ func (c *ClusterController) Status(ctx *app.StatusClusterContext) error {
 	// Load from DB
 	err := cbNode.DBLoad()
 	if err != nil {
-		ctx.ResponseData.WriteHeader(500)
-		_, err2 := ctx.ResponseData.Write([]byte(err.Error()))
-		return err2
+		return app.Couchbasecluster{}, err
 	}
 
 	cbNode.IsInitialNode = true
@@ -77,6 +102,6 @@ func (c *ClusterController) Status(ctx *app.StatusClusterContext) error {
 		IsInitialNode: cbNode.IsInitialNode,
 	}
 
-	return ctx.OK(&cbClusterReturnVal)
+	return cbClusterReturnVal, nil
 
 }

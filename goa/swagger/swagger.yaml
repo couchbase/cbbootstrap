@@ -46,6 +46,23 @@ definitions:
     - node_ip_addr_or_hostname
     title: CreateOrJoinClusterPayload
     type: object
+  GetStatusClusterPayload:
+    example:
+      cluster_id: 3gj
+      node_ip_addr_or_hostname: "5"
+    properties:
+      cluster_id:
+        example: 3gj
+        minLength: 1
+        type: string
+      node_ip_addr_or_hostname:
+        example: "5"
+        minLength: 1
+        type: string
+    required:
+    - cluster_id
+    title: GetStatusClusterPayload
+    type: object
 host: localhost:8080
 info:
   description: REST API to enable bootstrapping Couchbase Server clusters
@@ -92,6 +109,28 @@ paths:
       - http
       - https
       summary: status cluster
+      tags:
+      - cluster
+  /cluster/get_status:
+    post:
+      description: Get Couchbase Cluster by ID.  Works around URL encoding issues
+        seen in GET with :cluster_id URL param
+      operationId: cluster#get_status
+      parameters:
+      - in: body
+        name: payload
+        required: true
+        schema:
+          $ref: '#/definitions/GetStatusClusterPayload'
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/Couchbasecluster'
+      schemes:
+      - http
+      - https
+      summary: get_status cluster
       tags:
       - cluster
 produces:

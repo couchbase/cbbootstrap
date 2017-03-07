@@ -39,6 +39,16 @@ var _ = Resource("cluster", func() {
 		Response(OK)
 	})
 
+	Action("get_status", func() {
+
+		Routing(POST("get_status"))
+		Description("Get Couchbase Cluster by ID.  Works around URL encoding issues seen in GET with :cluster_id URL param")
+		Payload(CreateOrJoinClusterPayload, func() {
+			Required("cluster_id")
+		})
+		Response(OK)
+	})
+
 
 })
 

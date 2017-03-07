@@ -31,6 +31,7 @@ func initService(service *goa.Service) {
 type ClusterController interface {
 	goa.Muxer
 	CreateOrJoin(*CreateOrJoinClusterContext) error
+	GetStatus(*GetStatusClusterContext) error
 	Status(*StatusClusterContext) error
 }
 
@@ -66,6 +67,27 @@ func MountClusterController(service *goa.Service, ctrl ClusterController) {
 			return err
 		}
 		// Build the context
+		rctx, err := NewGetStatusClusterContext(ctx, req, service)
+		if err != nil {
+			return err
+		}
+		// Build the payload
+		if rawPayload := goa.ContextRequest(ctx).Payload; rawPayload != nil {
+			rctx.Payload = rawPayload.(*GetStatusClusterPayload)
+		} else {
+			return goa.MissingPayloadError()
+		}
+		return ctrl.GetStatus(rctx)
+	}
+	service.Mux.Handle("POST", "/cluster/get_status", ctrl.MuxHandler("GetStatus", h, unmarshalGetStatusClusterPayload))
+	service.LogInfo("mount", "ctrl", "Cluster", "action", "GetStatus", "route", "POST /cluster/get_status")
+
+	h = func(ctx context.Context, rw http.ResponseWriter, req *http.Request) error {
+		// Check if there was an error loading the request
+		if err := goa.ContextError(ctx); err != nil {
+			return err
+		}
+		// Build the context
 		rctx, err := NewStatusClusterContext(ctx, req, service)
 		if err != nil {
 			return err
@@ -79,6 +101,21 @@ func MountClusterController(service *goa.Service, ctrl ClusterController) {
 // unmarshalCreateOrJoinClusterPayload unmarshals the request body into the context request data Payload field.
 func unmarshalCreateOrJoinClusterPayload(ctx context.Context, service *goa.Service, req *http.Request) error {
 	payload := &createOrJoinClusterPayload{}
+	if err := service.DecodeRequest(req, payload); err != nil {
+		return err
+	}
+	if err := payload.Validate(); err != nil {
+		// Initialize payload with private data structure so it can be logged
+		goa.ContextRequest(ctx).Payload = payload
+		return err
+	}
+	goa.ContextRequest(ctx).Payload = payload.Publicize()
+	return nil
+}
+
+// unmarshalGetStatusClusterPayload unmarshals the request body into the context request data Payload field.
+func unmarshalGetStatusClusterPayload(ctx context.Context, service *goa.Service, req *http.Request) error {
+	payload := &getStatusClusterPayload{}
 	if err := service.DecodeRequest(req, payload); err != nil {
 		return err
 	}

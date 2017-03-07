@@ -14,6 +14,7 @@ import (
 	"github.com/goadesign/goa"
 	"golang.org/x/net/context"
 	"net/http"
+	"unicode/utf8"
 )
 
 // CreateOrJoinClusterContext provides the cluster create_or_join action context.
@@ -38,6 +39,90 @@ func NewCreateOrJoinClusterContext(ctx context.Context, r *http.Request, service
 
 // OK sends a HTTP response with status code 200.
 func (ctx *CreateOrJoinClusterContext) OK(r *Couchbasecluster) error {
+	ctx.ResponseData.Header().Set("Content-Type", "application/vnd.couchbasecluster+json")
+	return ctx.ResponseData.Service.Send(ctx.Context, 200, r)
+}
+
+// GetStatusClusterContext provides the cluster get_status action context.
+type GetStatusClusterContext struct {
+	context.Context
+	*goa.ResponseData
+	*goa.RequestData
+	Payload *GetStatusClusterPayload
+}
+
+// NewGetStatusClusterContext parses the incoming request URL and body, performs validations and creates the
+// context used by the cluster controller get_status action.
+func NewGetStatusClusterContext(ctx context.Context, r *http.Request, service *goa.Service) (*GetStatusClusterContext, error) {
+	var err error
+	resp := goa.ContextResponse(ctx)
+	resp.Service = service
+	req := goa.ContextRequest(ctx)
+	req.Request = r
+	rctx := GetStatusClusterContext{Context: ctx, ResponseData: resp, RequestData: req}
+	return &rctx, err
+}
+
+// getStatusClusterPayload is the cluster get_status action payload.
+type getStatusClusterPayload struct {
+	ClusterID            *string `form:"cluster_id,omitempty" json:"cluster_id,omitempty" xml:"cluster_id,omitempty"`
+	NodeIPAddrOrHostname *string `form:"node_ip_addr_or_hostname,omitempty" json:"node_ip_addr_or_hostname,omitempty" xml:"node_ip_addr_or_hostname,omitempty"`
+}
+
+// Validate runs the validation rules defined in the design.
+func (payload *getStatusClusterPayload) Validate() (err error) {
+	if payload.ClusterID == nil {
+		err = goa.MergeErrors(err, goa.MissingAttributeError(`raw`, "cluster_id"))
+	}
+	if payload.ClusterID != nil {
+		if utf8.RuneCountInString(*payload.ClusterID) < 1 {
+			err = goa.MergeErrors(err, goa.InvalidLengthError(`raw.cluster_id`, *payload.ClusterID, utf8.RuneCountInString(*payload.ClusterID), 1, true))
+		}
+	}
+	if payload.NodeIPAddrOrHostname != nil {
+		if utf8.RuneCountInString(*payload.NodeIPAddrOrHostname) < 1 {
+			err = goa.MergeErrors(err, goa.InvalidLengthError(`raw.node_ip_addr_or_hostname`, *payload.NodeIPAddrOrHostname, utf8.RuneCountInString(*payload.NodeIPAddrOrHostname), 1, true))
+		}
+	}
+	return
+}
+
+// Publicize creates GetStatusClusterPayload from getStatusClusterPayload
+func (payload *getStatusClusterPayload) Publicize() *GetStatusClusterPayload {
+	var pub GetStatusClusterPayload
+	if payload.ClusterID != nil {
+		pub.ClusterID = *payload.ClusterID
+	}
+	if payload.NodeIPAddrOrHostname != nil {
+		pub.NodeIPAddrOrHostname = payload.NodeIPAddrOrHostname
+	}
+	return &pub
+}
+
+// GetStatusClusterPayload is the cluster get_status action payload.
+type GetStatusClusterPayload struct {
+	ClusterID            string  `form:"cluster_id" json:"cluster_id" xml:"cluster_id"`
+	NodeIPAddrOrHostname *string `form:"node_ip_addr_or_hostname,omitempty" json:"node_ip_addr_or_hostname,omitempty" xml:"node_ip_addr_or_hostname,omitempty"`
+}
+
+// Validate runs the validation rules defined in the design.
+func (payload *GetStatusClusterPayload) Validate() (err error) {
+	if payload.ClusterID == "" {
+		err = goa.MergeErrors(err, goa.MissingAttributeError(`raw`, "cluster_id"))
+	}
+	if utf8.RuneCountInString(payload.ClusterID) < 1 {
+		err = goa.MergeErrors(err, goa.InvalidLengthError(`raw.cluster_id`, payload.ClusterID, utf8.RuneCountInString(payload.ClusterID), 1, true))
+	}
+	if payload.NodeIPAddrOrHostname != nil {
+		if utf8.RuneCountInString(*payload.NodeIPAddrOrHostname) < 1 {
+			err = goa.MergeErrors(err, goa.InvalidLengthError(`raw.node_ip_addr_or_hostname`, *payload.NodeIPAddrOrHostname, utf8.RuneCountInString(*payload.NodeIPAddrOrHostname), 1, true))
+		}
+	}
+	return
+}
+
+// OK sends a HTTP response with status code 200.
+func (ctx *GetStatusClusterContext) OK(r *Couchbasecluster) error {
 	ctx.ResponseData.Header().Set("Content-Type", "application/vnd.couchbasecluster+json")
 	return ctx.ResponseData.Service.Send(ctx.Context, 200, r)
 }
