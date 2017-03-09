@@ -1,0 +1,9 @@
+# Render to svg via https://bramp.github.io/js-sequence-diagrams/
+
+Couchbase Node 1->CBBootstrap: CreateOrJoin (cluster-id=1, ip-addr=node1)
+Couchbase Node 2->CBBootstrap: CreateOrJoin (cluster-id=1, ip-addr=node2)
+CBBootstrap -> Couchbase Node 1: (initial-node=true)
+CBBootstrap -> Couchbase Node 2: (initial-node=false, initial-ip=node1)
+Note left of Couchbase Node 1: Node 1 wins race,\nbecomes initial node
+Note right of Couchbase Node 2: Node 2 loses race,\njoins cluster via Node 1
+
