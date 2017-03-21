@@ -77,4 +77,4 @@ $ curl -X POST \
 
 ## Related work
 
-* [Using DNS SRV records for discovering Couchbase nodes](https://developer.couchbase.com/documentation/server/current/sdk/java/managing-connections.html#story-h2-6)
+* [Using DNS SRV records for discovering Couchbase nodes](https://developer.couchbase.com/documentation/server/current/sdk/java/managing-connections.html#story-h2-6) + [related blog post](http://nitschinger.at/Bootstrapping-from-DNS-SRV-records-in-Java/)
