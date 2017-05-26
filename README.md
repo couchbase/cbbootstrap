@@ -25,7 +25,7 @@ This could also be useful when trying to run Couchbase in container orchestratio
 
 ## REST API Definition
 
-See [swagger.yaml](goa/swagger/swagger.yaml)
+See [hosted swaggerhub API docs](https://swaggerhub.com/apis/tleyden/CBBootstrap/1.0.0) or raw [swagger.yaml](goa/swagger/swagger.yaml) 
 
 ## Deploy to AWS Lambda
 
