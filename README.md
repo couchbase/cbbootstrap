@@ -27,11 +27,22 @@ This could also be useful when trying to run Couchbase in container orchestratio
 
 See [hosted swaggerhub API docs](https://swaggerhub.com/apis/tleyden/CBBootstrap/1.0.0) or raw [swagger.yaml](goa/swagger/swagger.yaml) 
 
+## Create DynamoDB database
+
+Create a table named `cb-bootstrap`
+
 ## Deploy to AWS Lambda
+
+Get the code:
+
+```
+$ go get github.com/couchbase/cbbootstrap
+```
 
 Package the lambda function 
 
 ```
+$ cd $GOPATH/src/github.com/couchbase/cbbootstrap
 $ wget -O Makefile https://github.com/eawsy/aws-lambda-go-shim/raw/master/src/Makefile.example
 $ make
 ```
