@@ -1,8 +1,5 @@
 package main
 
-// /* Required by eawsy/aws-lambda-go-net */
-import "C"
-
 import (
 	"github.com/eawsy/aws-lambda-go-net/service/lambda/runtime/net/apigatewayproxy"
 	"github.com/goadesign/goa"
@@ -50,7 +47,7 @@ func init() {
 	ln := net.Listen()
 
 	// Amazon API Gateway Binary support out of the box.
-	Handle = apigatewayproxy.New(ln, []string{"image/png"}).Handle
+	Handle = apigatewayproxy.New(ln, nil).Handle
 
 	service := createGoaService()
 
