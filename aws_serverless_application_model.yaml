@@ -6,7 +6,7 @@ Resources:
     Properties:
       Handler: handler.Handle
       Runtime: python2.7
-      CodeUri: ./package.zip
+      CodeUri: ./handler.zip
       Policies: AmazonDynamoDBFullAccess
       Events:
         ApiRoot:
