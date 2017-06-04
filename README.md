@@ -5,7 +5,7 @@ A REST API intendended to be run as a public service to help bootstrap Couchbase
 
 ## Sequence diagram
 
-Here's how the interaction between [bootstrap scripts](https://github.com/couchbaselabs/sg-autoscale/blob/master/src/cbbootstrap.py) running on the Couchbase nodes would interact with cbbootstrap running externally:
+Here's how the interaction between [bootstrap scripts](https://github.com/couchbase/sync-gateway-ami/blob/master/src/cbbootstrap.py) running on the Couchbase nodes would interact with cbbootstrap running externally:
 
 ![diagram](https://github.com/couchbase/cbbootstrap/raw/master/docs/cbbootstrap-diagram.png)
 
@@ -15,11 +15,11 @@ Here's how the interaction between [bootstrap scripts](https://github.com/couchb
 
 ## Sample Use
 
-See [cbbootstrap.py](https://github.com/couchbaselabs/sg-autoscale/blob/master/src/cbbootstrap.py) -- this is intended to be called from a `user-data.sh` script on EC2 instance launch, but can be used in other scenarios.
+See [cbbootstrap.py](https://github.com/couchbase/sync-gateway-ami/blob/master/src/cbbootstrap.py) -- this is intended to be called from a `user-data.sh` script on EC2 instance launch, but can be used in other scenarios.
 
 ## Backstory
 
-Needed for the dynamic and automated [sg-autoscale](http://github.com/couchbaselabs/sg-autoscale) project to be able to start a CloudFormation and have the Couchbase Server cluster initialize itself based on parameters.
+Needed for the dynamic and automated [sync-gateway-ami](https://github.com/couchbase/sync-gateway-ami) project to be able to start a CloudFormation and have the Couchbase Server cluster initialize itself based on parameters.
 
 This could also be useful when trying to run Couchbase in container orchestration platforms like Kubernetes or Docker Swarm.
 
