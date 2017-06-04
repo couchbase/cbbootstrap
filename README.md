@@ -66,9 +66,11 @@ Get REST API endpoint
 ```
 $ aws cloudformation describe-stacks \
   --stack-name CBBootstrapExperiment \
-  --region us-east-1 | grep -i OutputValue
+  --region us-east-1 \
+  --output text \
+  --query Stacks[0].Outputs[0]
 
-"OutputValue": "https://5e61vqxs5f.execute-api.us-east-1.amazonaws.com/Prod"
+"https://5e61vqxs5f.execute-api.us-east-1.amazonaws.com/Prod"
 ```
 
 Test endpoint
